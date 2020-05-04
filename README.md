@@ -8,11 +8,11 @@ The project consists of two files:
   Configuration for your client
 
 ##### Configuration ##### 
-**CF_EMAIL** 
+###### CF_EMAIL ######
 Your email adress, associated with your account on cloudflare.
 
-**CF_TOKEN** 
+###### CF_TOKEN ######
 Your global API access token
 
-**ZONE_NAME** 
+###### ZONE_NAME ######
 Your domain

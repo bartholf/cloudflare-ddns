@@ -1,5 +1,5 @@
 ### update-cf
-A small bash script that handles the updating of you A record on CloudFlare.
+A small bash script that handles the updating of your A record on CloudFlare.
 
 The project consists of two files:
 * ``` update-cf.sh ```

@@ -26,10 +26,11 @@ ZONE_ID=$(api_get "zones?name=$ZONE_NAME&status=active" '.result[0].id')
 A_ID=$(api_get "zones/$ZONE_ID/dns_records?name=$ZONE_NAME&type=A" '.result[0].id')
 
 # Update record
-RES=$(curl -s -X PUT "$API_BASE_URI/zones/$ZONE_ID/dns_records/$A_ID" \
+RES=$(curl -s -X PATCH "$API_BASE_URI/zones/$ZONE_ID/dns_records/$A_ID" \
     -H "X-Auth-Email: $CF_EMAIL" \
     -H "X-Auth-Key: $CF_TOKEN" \
-    -H "Content-Type: application/json" --data "{\"id\":\"$ZONE_ID\",\"type\":\"A\",\"name\":\"$ZONE_NAME\",\"content\":\"$CURR_IP\"}" | jq '.success')
+    -H "Content-Type: application/json" \
+    --data "{\"content\": \"$CURR_IP\"}")
 
 if [[ $RES ]]; then
     echo $CURR_IP > $IP_FILE

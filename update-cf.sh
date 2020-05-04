@@ -1,4 +1,5 @@
 #!/bin/bash
+API_BASE_URI=https://api.cloudflare.com/client/v4
 CURR_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 DIR="$(dirname ${BASH_SOURCE[0]})"
 IP_FILE=$DIR/ip
@@ -12,19 +13,19 @@ if [[ $CURR_IP == $OLD_IP ]]; then
 fi
 
 # get the zone id for the requested zone
-ZONE_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME&status=active" \
+ZONE_ID=$(curl -s -X GET "$API_BASE_URI/zones?name=$ZONE_NAME&status=active" \
     -H "X-Auth-Email: $CF_EMAIL" \
     -H "X-Auth-Key: $CF_TOKEN" \
     -H "Content-Type: application/json" | jq -r '.result[0].id')
 
 # Get the id for the A pointer of the DNS record whose name matches ZONE_NAME
-A_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=$ZONE_NAME&type=A" \
+A_ID=$(curl -s -X GET "$API_BASE_URI/zones/$ZONE_ID/dns_records?name=$ZONE_NAME&type=A" \
     -H "X-Auth-Email: $CF_EMAIL" \
     -H "X-Auth-Key: $CF_TOKEN" \
     -H "Content-Type: application/json" | jq -r '.result[0].id')
 
 # Update record
-RES=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$A_ID" \
+RES=$(curl -s -X PUT "$API_BASE_URI/zones/$ZONE_ID/dns_records/$A_ID" \
     -H "X-Auth-Email: $CF_EMAIL" \
     -H "X-Auth-Key: $CF_TOKEN" \
     -H "Content-Type: application/json" --data "{\"id\":\"$ZONE_ID\",\"type\":\"A\",\"name\":\"$ZONE_NAME\",\"content\":\"$CURR_IP\"}" | jq '.success')

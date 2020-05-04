@@ -12,18 +12,18 @@ if [[ $CURR_IP == $OLD_IP ]]; then
     exit 0
 fi
 
-api_get() {
-    echo $(curl -s -X GET "$API_BASE_URI/$1" \
+api_call() {
+    echo $(curl -s -X $1 "$API_BASE_URI/$2" \
         -H "X-Auth-Email: $CF_EMAIL" \
         -H "X-Auth-Key: $CF_TOKEN" \
-        -H "Content-Type: application/json") | jq -r $2
+        -H "Content-Type: application/json") | jq -r $3
 }
 
 # get the zone id for the requested zone
-ZONE_ID=$(api_get "zones?name=$ZONE_NAME&status=active" '.result[0].id')
+ZONE_ID=$(api_call "GET" "zones?name=$ZONE_NAME&status=active" '.result[0].id')
 
 # Get the A record id
-A_ID=$(api_get "zones/$ZONE_ID/dns_records?name=$ZONE_NAME&type=A" '.result[0].id')
+A_ID=$(api_call "GET" "zones/$ZONE_ID/dns_records?name=$ZONE_NAME&type=A" '.result[0].id')
 
 # Update record
 RES=$(curl -s -X PATCH "$API_BASE_URI/zones/$ZONE_ID/dns_records/$A_ID" \
@@ -31,6 +31,9 @@ RES=$(curl -s -X PATCH "$API_BASE_URI/zones/$ZONE_ID/dns_records/$A_ID" \
     -H "X-Auth-Key: $CF_TOKEN" \
     -H "Content-Type: application/json" \
     --data "{\"content\": \"$CURR_IP\"}")
+
+echo $ZONE_ID $A_ID $RES
+exit 0
 
 if [[ $RES ]]; then
     echo $CURR_IP > $IP_FILE

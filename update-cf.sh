@@ -1,6 +1,4 @@
 #!/bin/bash
-API_BASE_URI=https://api.cloudflare.com/client/v4
-CURR_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 DIR="$(dirname ${BASH_SOURCE[0]})"
 IP_FILE=$DIR/ip
 OLD_IP=$([ -f "$IP_FILE" ] && echo $(cat $IP_FILE) || echo 'EMPTY')

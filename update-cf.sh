@@ -16,7 +16,8 @@ api_call() {
     echo $(curl -s -X $1 "$API_BASE_URI/$2" \
         -H "X-Auth-Email: $CF_EMAIL" \
         -H "X-Auth-Key: $CF_TOKEN" \
-        -H "Content-Type: application/json") | jq -r $3
+        -H "Content-Type: application/json" \
+        --data "${4:-''}" ) | jq -r $3
 }
 
 # get the zone id for the requested zone
@@ -26,14 +27,7 @@ ZONE_ID=$(api_call "GET" "zones?name=$ZONE_NAME&status=active" '.result[0].id')
 A_ID=$(api_call "GET" "zones/$ZONE_ID/dns_records?name=$ZONE_NAME&type=A" '.result[0].id')
 
 # Update record
-RES=$(curl -s -X PATCH "$API_BASE_URI/zones/$ZONE_ID/dns_records/$A_ID" \
-    -H "X-Auth-Email: $CF_EMAIL" \
-    -H "X-Auth-Key: $CF_TOKEN" \
-    -H "Content-Type: application/json" \
-    --data "{\"content\": \"$CURR_IP\"}")
-
-echo $ZONE_ID $A_ID $RES
-exit 0
+RES=$(api_call "PATCH" "zones/$ZONE_ID/dns_records/$A_ID" ".success" "{\"content\": \"$CURR_IP\"}")
 
 if [[ $RES ]]; then
     echo $CURR_IP > $IP_FILE

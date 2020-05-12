@@ -9,7 +9,11 @@ The project consists of two files:
 
 #### Get Started in two simple steps ####
 1. Start by copy ```.env.example``` to ```.env``` and provide your information there.  
-   The configuration directives are described below.
+   The configuration directives are described below.  
+   To hide the ``` .env ``` from the rest of the world, make it readable for none, but the owner:
+   ```bash
+   $ chmod 600 .env
+   ```
 2. Execute ``` $ ./update-cf.sh ```
 
 Note that the user executing the script must have write access to the catalog where
